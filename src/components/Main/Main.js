@@ -1,15 +1,31 @@
 import TaskList from '../TaskList';
 import Footer from '../Footer';
 
-const Main = ({ tasksList, hasNoted, hasDeleted }) => {
+const Main = ({
+	tasks,
+	tasksList,
+	filter,
+	setFilter,
+	hasNoted,
+	hasDeleted,
+	clearCompleted,
+	filterTasks,
+}) => {
 	return (
 		<section className="main">
 			<TaskList
-				tasks={tasksList}
-				hasNoted={(id) => hasNoted(id)}
+				tasksList={tasksList}
+				hasNoted={hasNoted}
 				hasDeleted={(id) => hasDeleted(id)}
 			/>
-			<Footer />
+			<Footer
+				tasks={tasks}
+				tasksList={tasksList}
+				filter={filter}
+				setFilter={setFilter}
+				clearCompleted={clearCompleted}
+				filterTasks={filterTasks}
+			/>
 		</section>
 	);
 };

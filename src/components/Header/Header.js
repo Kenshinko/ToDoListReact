@@ -1,11 +1,12 @@
 import Title from '../Title';
 import NewTaskForm from '../NewTaskForm';
 
-const Header = () => {
+const Header = ({ addTask }) => {
+
 	return (
 		<header className="header">
 			<Title />
-			<NewTaskForm />
+			<NewTaskForm addTask={addTask}/>
 		</header>
 	);
 };

@@ -1,12 +1,18 @@
 import TaskCount from '../TaskCount';
 import TasksFilter from '../TasksFilter';
 
-const Footer = () => {
+const Footer = ({ tasks, filter, setFilter, clearCompleted, filterTasks }) => {
 	return (
 		<footer className="footer">
-			<TaskCount />
-			<TasksFilter />
-			<button className="clear-completed">Clear completed</button>
+			<TaskCount tasks={tasks} filterTasks={filterTasks} />
+			<TasksFilter
+				filterTasks={filterTasks}
+				filter={filter}
+				setFilter={setFilter}
+			/>
+			<button className="clear-completed" onClick={clearCompleted}>
+				Clear completed
+			</button>
 		</footer>
 	);
 };
