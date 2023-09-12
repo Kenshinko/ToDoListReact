@@ -1,8 +1,15 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class NewTaskForm extends Component {
+	addNewTask = this.props.addTask;
+
 	state = {
 		inputValue: '',
+	};
+
+	static propTypes = {
+		addNewTask: PropTypes.func,
 	};
 
 	handleChange = (event) => {
@@ -15,8 +22,7 @@ export default class NewTaskForm extends Component {
 		// Вторая проверка на пустую строку.
 		if (event.key === 'Enter' && this.state.inputValue.trim()) {
 			// Функция addTask пробрасывается пропсами из компонента App.
-			const addNewTask = this.props.addTask;
-			addNewTask(this.state.inputValue);
+			this.addNewTask(this.state.inputValue);
 
 			this.setState({
 				inputValue: '',

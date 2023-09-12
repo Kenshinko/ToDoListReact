@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 import TaskCount from '../TaskCount';
 import TasksFilter from '../TasksFilter';
 
@@ -15,6 +17,10 @@ const Footer = ({ tasks, filter, setFilter, clearCompleted, filterTasks }) => {
 			</button>
 		</footer>
 	);
+};
+
+Footer.propTypes = {
+	clearCompleted: PropTypes.func.isRequired,
 };
 
 export default Footer;
