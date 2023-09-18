@@ -1,3 +1,3 @@
-import TaskCount from './TaskCount';
+import TaskCount from './TaskCount'
 
-export default TaskCount;
+export default TaskCount
