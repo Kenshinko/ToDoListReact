@@ -36,14 +36,16 @@ export default class NewTaskForm extends Component {
   // Разница между value и defaultValue в том, что последний рендерится только один раз.
   render() {
     return (
-      <input
-        className="new-todo"
-        placeholder="What needs to be done?"
-        autoFocus
-        onChange={this.handleChange}
-        onKeyDown={this.handleKeyDown}
-        value={this.state.inputValue}
-      />
+      <form onChange={this.handleChange}>
+        <input
+          className="new-todo"
+          placeholder="What needs to be done?"
+          autoFocus
+          required
+          onKeyDown={this.handleKeyDown}
+          defaultValue={this.state.inputValue}
+        />
+      </form>
     )
   }
 }

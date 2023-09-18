@@ -6,12 +6,10 @@ import Task from '../Task'
 const TaskList = ({ tasksList, hasNoted, hasDeleted }) => {
   const taskList = tasksList.map((task) => {
     return (
-      <Task
-        key={task.taskID}
-        hasNoted={() => hasNoted(task.taskID)}
-        hasDeleted={() => hasDeleted(task.taskID)}
-        {...task}
-      />
+      <li key={task.taskID} className={task.isEditing ? 'editing' : task.isCompleted ? 'completed' : null}>
+        <Task hasNoted={() => hasNoted(task.taskID)} hasDeleted={() => hasDeleted(task.taskID)} {...task} />
+        {task.isEditing ? <input type="text" className="edit" placeholder="Editing task"></input> : null}
+      </li>
     )
   })
 
