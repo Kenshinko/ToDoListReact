@@ -10,12 +10,33 @@ export default class App extends Component {
 
 	state = {
 		tasks: [
+			{
+				taskID: uuid(),
+				text: 'Task from 12.09.2023',
+				creationDate: formatDistanceToNow(1694478477337),
+				isCompleted: false,
+				isEditing: false,
+			},
 			this.createTask('Completed task', true, false),
 			this.createTask('Editing task', false, true),
 			this.createTask('Active task'),
 		],
 		activeFilter: 'all',
 	};
+
+	componentDidMount() {
+		const savedTasksList = JSON.parse(localStorage.getItem('tasksList'));
+
+		if (savedTasksList) {
+			this.setState({ tasks: [...savedTasksList] });
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (prevState.tasks !== this.state.tasks) {
+			localStorage.setItem('tasksList', JSON.stringify(this.state.tasks));
+		}
+	}
 
 	// Стрелочные функции не имеют всплытия, поэтому используем обычную, для того,
 	// чтобы была возможность использовать ее в создании нашего state до этапа рендеринга страницы.

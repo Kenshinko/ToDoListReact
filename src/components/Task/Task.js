@@ -1,6 +1,17 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 
 export default class TaskActive extends Component {
+	static defaultProps = {
+		isCompleted: false,
+		isEditing: false,
+	};
+
+	static propTypes = {
+		hasNoted: PropTypes.func.isRequired,
+		hasDeleted: PropTypes.func.isRequired,
+	};
+
 	render() {
 		const { text, creationDate, isCompleted, isEditing, hasNoted, hasDeleted } =
 			this.props;

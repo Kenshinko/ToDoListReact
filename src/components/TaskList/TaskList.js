@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Task from '../Task';
 
@@ -15,6 +16,10 @@ const TaskList = ({ tasksList, hasNoted, hasDeleted }) => {
 	});
 
 	return <ul className="todo-list">{taskList}</ul>;
+};
+
+TaskList.propTypes = {
+	tasksList: PropTypes.array.isRequired,
 };
 
 export default TaskList;
