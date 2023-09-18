@@ -2,8 +2,8 @@ import React from 'react';
 
 import Task from '../Task';
 
-const TaskList = ({ tasks, hasNoted, hasDeleted }) => {
-	const taskList = tasks.map((task) => {
+const TaskList = ({ tasksList, hasNoted, hasDeleted }) => {
+	const taskList = tasksList.map((task) => {
 		return (
 			<Task
 				key={task.taskID}
