@@ -330,12 +330,7 @@ body {
   left: 0;
 }
 
-.filters li {
-  display: inline;
-  cursor: default;
-}
-
-.filters li button {
+.filters label {
   display: inline-block;
   color: inherit;
   margin: 3px;
@@ -345,15 +340,15 @@ body {
   border-radius: 3px;
 }
 
-.filters li button:not(.selected) {
+.filters label:not(.selected) {
   cursor: pointer;
 }
 
-.filters li:hover button {
+.filters label:hover {
   border-color: rgba(175, 47, 47, 0.1);
 }
 
-.filters li button.selected {
+.filters .selected {
   border-color: rgba(175, 47, 47, 0.2);
 }
 
@@ -414,4 +409,16 @@ html .clear-completed:active {
   .filters {
     bottom: 10px;
   }
+}
+
+/*
+  Стиль для радио-кнопки
+*/
+.radiobutton {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  left: -100vh;
+  opacity: 0;
+  z-index: -1;
 }

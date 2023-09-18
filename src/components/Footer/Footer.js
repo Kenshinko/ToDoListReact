@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import TaskCount from '../TaskCount'
 import TasksFilter from '../TasksFilter'
 
-const Footer = ({ tasks, filter, setFilter, clearCompleted, filterTasks }) => {
+const Footer = ({ tasksLeft, filter, setFilter, clearCompleted, filterTasks }) => {
   return (
     <footer className="footer">
-      <TaskCount tasks={tasks} filterTasks={filterTasks} />
+      <TaskCount tasksLeft={tasksLeft} />
       <TasksFilter filterTasks={filterTasks} filter={filter} setFilter={setFilter} />
       <button className="clear-completed" onClick={clearCompleted}>
         Clear completed

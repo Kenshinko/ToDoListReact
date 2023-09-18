@@ -128,7 +128,7 @@ export default class App extends Component {
       <section className="todoapp">
         <Header addTask={this.addTask} />
         <Main
-          tasks={tasks}
+          tasksLeft={this.filterTaskList(tasks, 'active').length}
           tasksList={tasksToRender}
           filter={activeFilter}
           setFilter={this.setActiveTasksFilter}

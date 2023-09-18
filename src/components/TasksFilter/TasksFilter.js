@@ -10,27 +10,49 @@ export default class TasksFilter extends Component {
     setFilter: PropTypes.func.isRequired,
   }
 
+  setActiveButton = (filter, className) => {
+    return filter === className ? 'selected' : null
+  }
+
   render() {
     const { filter, setFilter } = this.props
 
     return (
-      <ul className="filters">
-        <li>
-          <button className={filter === 'all' ? 'selected' : null} onClick={() => setFilter('all')}>
-            All
-          </button>
-        </li>
-        <li>
-          <button className={filter === 'active' ? 'selected' : ''} onClick={() => setFilter('active')}>
-            Active
-          </button>
-        </li>
-        <li>
-          <button className={filter === 'completed' ? 'selected' : null} onClick={() => setFilter('completed')}>
-            Completed
-          </button>
-        </li>
-      </ul>
+      <div className="filters">
+        <label className={this.setActiveButton(filter, 'all')}>
+          <input
+            className="radiobutton"
+            type="radio"
+            name="filter"
+            value="all"
+            checked={filter === 'all'}
+            onChange={() => setFilter('all')}
+          />
+          All
+        </label>
+        <label className={this.setActiveButton(filter, 'active')}>
+          <input
+            className="radiobutton"
+            type="radio"
+            name="filter"
+            value="active"
+            checked={filter === 'active'}
+            onChange={() => setFilter('active')}
+          />
+          Active
+        </label>
+        <label className={this.setActiveButton(filter, 'completed')}>
+          <input
+            className="radiobutton"
+            type="radio"
+            name="filter"
+            value="completed"
+            checked={filter === 'completed'}
+            onChange={() => setFilter('completed')}
+          />
+          Completed
+        </label>
+      </div>
     )
   }
 }
