@@ -1,10 +1,14 @@
 import TaskList from '../TaskList';
 import Footer from '../Footer';
 
-const Main = ({ tasksList }) => {
+const Main = ({ tasksList, hasNoted, hasDeleted }) => {
 	return (
 		<section className="main">
-			<TaskList tasks={tasksList} />
+			<TaskList
+				tasks={tasksList}
+				hasNoted={(id) => hasNoted(id)}
+				hasDeleted={(id) => hasDeleted(id)}
+			/>
 			<Footer />
 		</section>
 	);
