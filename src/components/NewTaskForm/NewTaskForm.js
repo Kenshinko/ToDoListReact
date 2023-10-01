@@ -5,27 +5,41 @@ export default class NewTaskForm extends Component {
   addNewTask = this.props.addTask
 
   state = {
-    inputValue: '',
+    taskText: '',
+    minutes: '',
+    seconds: '',
   }
 
   static propTypes = {
     addNewTask: PropTypes.func,
   }
 
-  handleChange = (event) => {
+  handleTaskText = (event) => {
     this.setState({
-      inputValue: event.target.value,
+      taskText: event.target.value,
+    })
+  }
+
+  handleTaskMins = (event) => {
+    this.setState({
+      minutes: event.target.value,
+    })
+  }
+
+  handleTaskSecs = (event) => {
+    this.setState({
+      seconds: event.target.value,
     })
   }
 
   handleKeyDown = (event) => {
     // Вторая проверка на пустую строку.
-    if (event.key === 'Enter' && this.state.inputValue.trim()) {
+    if (event.key === 'Enter' && this.state.taskText.trim()) {
       // Функция addTask пробрасывается пропсами из компонента App.
-      this.addNewTask(this.state.inputValue)
+      this.addNewTask(this.state.taskText, this.state.minutes, this.state.seconds)
 
       this.setState({
-        inputValue: '',
+        taskText: '',
       })
     }
   }
@@ -36,14 +50,33 @@ export default class NewTaskForm extends Component {
   // Разница между value и defaultValue в том, что последний рендерится только один раз.
   render() {
     return (
-      <form onChange={this.handleChange}>
+      <form className="new-todo-form">
         <input
           className="new-todo"
-          placeholder="What needs to be done?"
+          placeholder="Task"
           autoFocus
           required
+          value={this.state.taskText}
           onKeyDown={this.handleKeyDown}
-          defaultValue={this.state.inputValue}
+          onChange={this.handleTaskText}
+        />
+        <input
+          type="number"
+          min="0"
+          className="new-todo-form__timer"
+          placeholder="Min"
+          required
+          value={this.state.minutes}
+          onChange={this.handleTaskMins}
+        />
+        <input
+          type="number"
+          min="0"
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          required
+          value={this.state.seconds}
+          onChange={this.handleTaskSecs}
         />
       </form>
     )
