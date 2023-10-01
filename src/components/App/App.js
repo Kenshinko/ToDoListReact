@@ -1,5 +1,4 @@
 import { Component } from 'react'
-import { formatDistanceToNow } from 'date-fns'
 import uuid from 'react-uuid'
 
 import Header from '../Header'
@@ -13,13 +12,41 @@ export default class App extends Component {
       {
         taskID: uuid(),
         text: 'Task from 12.09.2023',
-        creationDate: formatDistanceToNow(1694478477337),
+        minutes: 0,
+        seconds: 5,
+        creationDate: new Date(1694478477337),
+        expiredDate: null,
         isCompleted: false,
         isEditing: false,
       },
-      this.createTask('Completed task', true, false),
-      this.createTask('Editing task', false, true),
-      this.createTask('Active task'),
+      {
+        taskID: uuid(),
+        text: 'Completed task',
+        minutes: 0,
+        seconds: 0,
+        creationDate: new Date(),
+        expiredDate: null,
+        isCompleted: true,
+        isEditing: false,
+      },
+      {
+        taskID: uuid(),
+        text: 'Editing task',
+        minutes: 10,
+        seconds: 0,
+        creationDate: new Date(),
+        expiredDate: null,
+        isCompleted: false,
+        isEditing: true,
+      },
+      {
+        taskID: uuid(),
+        text: 'Active task',
+        minutes: 15,
+        seconds: 0,
+        creationDate: new Date(),
+        expiredDate: null,
+      },
     ],
     activeFilter: 'all',
   }
@@ -41,18 +68,21 @@ export default class App extends Component {
   // Стрелочные функции не имеют всплытия, поэтому используем обычную, для того,
   // чтобы была возможность использовать ее в создании нашего state до этапа рендеринга страницы.
   // Во всех остальных случаях используем стрелочные функции.
-  createTask(text, isCompleted = false, isEditing = false) {
+  createTask(text, minutes, seconds, isCompleted = false, isEditing = false) {
     return {
       taskID: uuid(),
       text,
-      creationDate: formatDistanceToNow(new Date()),
+      minutes: parseInt(minutes),
+      seconds: parseInt(seconds),
       isCompleted,
       isEditing,
+      creationDate: new Date(),
+      expiredDate: null,
     }
   }
 
-  addTask = (text) => {
-    const newTask = this.createTask(text)
+  addTask = (text, mins, secs) => {
+    const newTask = this.createTask(text, mins, secs)
 
     this.setState(({ tasks }) => {
       return {
@@ -102,6 +132,25 @@ export default class App extends Component {
     })
   }
 
+  updateTask = (id, minutes, seconds, creationDate, expiredDate, timerSecs) => {
+    this.setState(({ tasks }) => {
+      const idx = this.findTask(id)
+      const oldElement = tasks[idx]
+      const renewElement = {
+        ...oldElement,
+        minutes,
+        seconds,
+        creationDate,
+        expiredDate,
+        timerSecs,
+      }
+
+      return {
+        tasks: [...tasks.slice(0, idx), renewElement, ...tasks.slice(idx + 1)],
+      }
+    })
+  }
+
   deleteTask = (id) => {
     this.setState(({ tasks }) => {
       const idx = this.findTask(id)
@@ -128,6 +177,7 @@ export default class App extends Component {
       <section className="todoapp">
         <Header addTask={this.addTask} />
         <Main
+          updateTask={this.updateTask}
           tasksLeft={this.filterTaskList(tasks, 'active').length}
           tasksList={tasksToRender}
           filter={activeFilter}
