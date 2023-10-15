@@ -1,193 +1,193 @@
-import { Component } from 'react'
-import uuid from 'react-uuid'
+import { useCallback, useEffect, useState } from 'react'
+import { nanoid } from 'nanoid'
+import { add } from 'date-fns'
 
-import Header from '../Header'
-import Main from '../Main'
+import NewTaskForm from '../NewTaskForm'
+import TasksList from '../TasksList'
+import TasksFilter from '../TasksFilter'
 
-export default class App extends Component {
-  currentDate = new Date()
-
-  state = {
-    tasks: [
-      {
-        taskID: uuid(),
-        text: 'Task from 12.09.2023',
-        minutes: 0,
-        seconds: 5,
-        creationDate: new Date(1694478477337),
-        expiredDate: null,
-        isCompleted: false,
-        isEditing: false,
-      },
-      {
-        taskID: uuid(),
-        text: 'Completed task',
-        minutes: 0,
-        seconds: 0,
-        creationDate: new Date(),
-        expiredDate: null,
-        isCompleted: true,
-        isEditing: false,
-      },
-      {
-        taskID: uuid(),
-        text: 'Editing task',
-        minutes: 10,
-        seconds: 0,
-        creationDate: new Date(),
-        expiredDate: null,
-        isCompleted: false,
-        isEditing: true,
-      },
-      {
-        taskID: uuid(),
-        text: 'Active task',
-        minutes: 15,
-        seconds: 0,
-        creationDate: new Date(),
-        expiredDate: null,
-      },
-    ],
-    activeFilter: 'all',
-  }
-
-  componentDidMount() {
-    const savedTasksList = JSON.parse(localStorage.getItem('tasksList'))
-
-    if (savedTasksList) {
-      this.setState({ tasks: [...savedTasksList] })
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.tasks !== this.state.tasks) {
-      localStorage.setItem('tasksList', JSON.stringify(this.state.tasks))
-    }
-  }
-
-  // Стрелочные функции не имеют всплытия, поэтому используем обычную, для того,
-  // чтобы была возможность использовать ее в создании нашего state до этапа рендеринга страницы.
-  // Во всех остальных случаях используем стрелочные функции.
-  createTask(text, minutes, seconds, isCompleted = false, isEditing = false) {
-    return {
-      taskID: uuid(),
-      text,
-      minutes: parseInt(minutes),
-      seconds: parseInt(seconds),
-      isCompleted,
-      isEditing,
+const App = () => {
+  const initialTasksList = [
+    {
+      taskID: '101',
+      text: 'Task from 12.09.2023',
+      creationDate: new Date(1694478477337),
+      isCompleted: false,
+      isEditing: false,
+      timer: false,
+      timerSecs: 5,
+    },
+    {
+      taskID: '102',
+      text: 'Completed task',
       creationDate: new Date(),
-      expiredDate: null,
+      isCompleted: true,
+      isEditing: false,
+      timer: false,
+      timerSecs: 5 * 60 + 25,
+    },
+    {
+      taskID: '103',
+      text: 'Editing task',
+      creationDate: new Date(),
+      isCompleted: false,
+      isEditing: true,
+      timer: false,
+      timerSecs: 15 * 60,
+    },
+    {
+      taskID: '104',
+      text: 'Active task',
+      creationDate: new Date(),
+      timer: false,
+      timerSecs: 6 * 60 + 30,
+    },
+  ]
+
+  let [tasksList, setTasksList] = useState(initialTasksList)
+  const [activeFilter, setActiveFilter] = useState('all')
+
+  const createTask = (text, mins, secs) => {
+    const creationDate = new Date()
+    const expiredDate = add(creationDate, {
+      years: 0,
+      months: 0,
+      weeks: 0,
+      days: 0,
+      hours: 0,
+      minutes: mins,
+      seconds: secs,
+    })
+    const timerSecs = parseInt(mins) * 60 + parseInt(secs)
+
+    return {
+      taskID: nanoid(),
+      text,
+      isCompleted: false,
+      isEditing: false,
+      creationDate,
+      expiredDate,
+      timer: false,
+      timerSecs,
     }
   }
 
-  addTask = (text, mins, secs) => {
-    const newTask = this.createTask(text, mins, secs)
-
-    this.setState(({ tasks }) => {
-      return {
-        tasks: [...tasks, newTask],
-      }
-    })
+  const addTask = (task) => {
+    const { text, mins, secs } = task
+    setTasksList((tasksList) => [...tasksList, createTask(text, mins, secs)])
   }
 
-  findTask = (id) => {
-    return this.state.tasks.findIndex((el) => el.taskID === id)
+  const deleteTask = (id) => {
+    const idx = findTask(id)
+    setTasksList((tasksList) => tasksList.toSpliced(idx, 1))
   }
 
-  setActiveTasksFilter = (filter) => {
-    this.setState({
-      activeFilter: filter,
-    })
+  const findTask = (id) => {
+    return tasksList.findIndex((el) => el.taskID == id)
   }
 
-  filterTaskList = (tasks, filter) => {
+  const toggleTaskProperty = (tasks, id, prop, value = null) => {
+    const idx = findTask(id)
+    const oldItem = tasks[idx]
+    const newItem = { ...oldItem, [prop]: value || !oldItem[prop] }
+
+    return tasks.toSpliced(idx, 1, newItem)
+  }
+
+  const toggleTaskCompleted = (id) => {
+    setTasksList((tasksList) => toggleTaskProperty(tasksList, id, 'isCompleted'))
+  }
+
+  const toggleTaskEditing = (id) => {
+    setTasksList((tasksList) => toggleTaskProperty(tasksList, id, 'isEditing'))
+  }
+
+  const changeTaskText = (id, text) => {
+    setTasksList((tasksList) => toggleTaskProperty(tasksList, id, 'text', text))
+  }
+
+  const filterTaskList = (tasks, filter) => {
     if (filter === 'active') {
-      return tasks.filter((el) => !el.isCompleted)
+      return tasks.filter((task) => !task.isCompleted)
     }
 
     if (filter === 'completed') {
-      return tasks.filter((el) => el.isCompleted)
+      return tasks.filter((task) => task.isCompleted)
     }
 
     return tasks
   }
 
-  markTask = (id) => {
-    this.setState(({ tasks }) => {
-      // Находим задачу в массиве нашего текущего state по ее ID.
-      const idx = this.findTask(id)
-      // Вытаскиваем найденый элемент.
-      const oldElement = tasks[idx]
-      // Создаем новый элемент из старого и изменяем его свойства.
-      const newElement = {
-        ...oldElement,
-        isCompleted: !oldElement.isCompleted,
-      }
-
-      // Возвращаем новый массив задач, собирая его из элементов старого массива и нашей новой задачи.
-      return {
-        tasks: [...tasks.slice(0, idx), newElement, ...tasks.slice(idx + 1)],
-      }
-    })
+  const clearCompletedTasks = () => {
+    setTasksList((tasksList) => [...filterTaskList(tasksList, 'active')])
   }
 
-  updateTask = (id, minutes, seconds, creationDate, expiredDate, timerSecs) => {
-    this.setState(({ tasks }) => {
-      const idx = this.findTask(id)
-      const oldElement = tasks[idx]
-      const renewElement = {
-        ...oldElement,
-        minutes,
-        seconds,
-        creationDate,
-        expiredDate,
-        timerSecs,
-      }
-
-      return {
-        tasks: [...tasks.slice(0, idx), renewElement, ...tasks.slice(idx + 1)],
-      }
-    })
+  const handleSetTimer = (id, boolean) => {
+    setTasksList((tasksList) => toggleTaskProperty(tasksList, id, 'timer', boolean))
   }
 
-  deleteTask = (id) => {
-    this.setState(({ tasks }) => {
-      const idx = this.findTask(id)
+  const counting = useCallback(() => {
+    setTasksList((tasksList) => {
+      const allTimersFalse = tasksList.every((task) => !task.timer)
 
-      return {
-        tasks: [...tasks.slice(0, idx), ...tasks.slice(idx + 1)],
+      if (allTimersFalse) {
+        return tasksList
       }
+
+      return tasksList.map((task) => {
+        if (task.timerSecs <= 0) {
+          return { ...task, timer: false }
+        }
+        if (task.timer && task.timerSecs > 0) {
+          return { ...task, timerSecs: task.timerSecs - 1 }
+        }
+        return task
+      })
     })
-  }
+  }, [])
 
-  clearCompletedTasks = () => {
-    this.setState(({ tasks }) => {
-      return {
-        tasks: [...this.filterTaskList(tasks, 'active')],
-      }
-    })
-  }
+  const tasksLeft = filterTaskList(tasksList, 'active').length
 
-  render() {
-    const { tasks, activeFilter } = this.state
-    const tasksToRender = this.filterTaskList(tasks, activeFilter)
+  useEffect(() => {
+    const savedTasksList = JSON.parse(localStorage.getItem('tasksList'))
 
-    return (
-      <section className="todoapp">
-        <Header addTask={this.addTask} />
-        <Main
-          updateTask={this.updateTask}
-          tasksLeft={this.filterTaskList(tasks, 'active').length}
-          tasksList={tasksToRender}
-          filter={activeFilter}
-          setFilter={this.setActiveTasksFilter}
-          hasNoted={this.markTask}
-          hasDeleted={this.deleteTask}
-          clearCompleted={this.clearCompletedTasks}
-          filterTasks={this.filterTaskList}
+    if (savedTasksList) {
+      setTasksList([...savedTasksList])
+    }
+
+    const taskTimer = setInterval(() => counting(), 1000)
+    return () => clearInterval(taskTimer)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('tasksList', JSON.stringify(tasksList))
+  }, [tasksList])
+
+  return (
+    <div className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTaskForm addTask={addTask} />
+      </header>
+      <main className="main">
+        <TasksList
+          tasksList={filterTaskList(tasksList, activeFilter)}
+          hasNoted={toggleTaskCompleted}
+          hasEdit={toggleTaskEditing}
+          updateText={changeTaskText}
+          deleteTask={deleteTask}
+          handleSetTimer={handleSetTimer}
         />
-      </section>
-    )
-  }
+      </main>
+      <footer className="footer">
+        <span className="todo-count">{tasksLeft} items left</span>
+        <TasksFilter activeFilter={activeFilter} setFilter={setActiveFilter} />
+        <button className="clear-completed" onClick={clearCompletedTasks}>
+          Clear completed
+        </button>
+      </footer>
+    </div>
+  )
 }
+
+export default App

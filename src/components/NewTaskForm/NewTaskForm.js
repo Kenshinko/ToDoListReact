@@ -1,84 +1,61 @@
-import { Component } from 'react'
-import PropTypes from 'prop-types'
+import { useState } from 'react'
 
-export default class NewTaskForm extends Component {
-  addNewTask = this.props.addTask
-
-  state = {
-    taskText: '',
-    minutes: '',
-    seconds: '',
+const NewTaskForm = ({ addTask }) => {
+  const initialTask = {
+    text: '',
+    mins: '',
+    secs: '',
   }
+  const [task, setTask] = useState(initialTask)
+  const { text, mins, secs } = task
 
-  static propTypes = {
-    addNewTask: PropTypes.func,
-  }
-
-  handleTaskText = (event) => {
-    this.setState({
-      taskText: event.target.value,
+  const useHandleTask = (prop, value) => {
+    setTask((task) => {
+      return { ...task, [prop]: value }
     })
   }
 
-  handleTaskMins = (event) => {
-    this.setState({
-      minutes: event.target.value,
-    })
-  }
-
-  handleTaskSecs = (event) => {
-    this.setState({
-      seconds: event.target.value,
-    })
-  }
-
-  handleKeyDown = (event) => {
-    // Вторая проверка на пустую строку.
-    if (event.key === 'Enter' && this.state.taskText.trim()) {
-      // Функция addTask пробрасывается пропсами из компонента App.
-      this.addNewTask(this.state.taskText, this.state.minutes, this.state.seconds)
-
-      this.setState({
-        taskText: '',
-      })
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    if (text.trim()) {
+      addTask({ text, mins, secs })
+      setTask(initialTask)
     }
   }
 
-  // onChange мониторит изменения в инпуте.
-  // onKeyDown смотрит за нажатием клавиши Enter.
-  // value используется только в связке с onChange.
-  // Разница между value и defaultValue в том, что последний рендерится только один раз.
-  render() {
-    return (
-      <form className="new-todo-form">
-        <input
-          className="new-todo"
-          placeholder="Task"
-          autoFocus
-          required
-          value={this.state.taskText}
-          onKeyDown={this.handleKeyDown}
-          onChange={this.handleTaskText}
-        />
-        <input
-          type="number"
-          min="0"
-          className="new-todo-form__timer"
-          placeholder="Min"
-          required
-          value={this.state.minutes}
-          onChange={this.handleTaskMins}
-        />
-        <input
-          type="number"
-          min="0"
-          className="new-todo-form__timer"
-          placeholder="Sec"
-          required
-          value={this.state.seconds}
-          onChange={this.handleTaskSecs}
-        />
-      </form>
-    )
-  }
+  return (
+    <form className="new-todo-form" onSubmit={(event) => handleSubmit(event)}>
+      <input
+        className="new-todo"
+        placeholder="Task"
+        autoFocus
+        value={text}
+        onChange={({ target }) => useHandleTask('text', target.value)}
+        required
+      />
+      <input
+        type="number"
+        min="0"
+        max="59"
+        className="new-todo-form__timer"
+        placeholder="Min"
+        value={mins}
+        onChange={({ target }) => useHandleTask('mins', target.value)}
+        required
+      />
+      <input
+        type="number"
+        min="0"
+        max="59"
+        className="new-todo-form__timer"
+        placeholder="Sec"
+        value={secs}
+        onChange={({ target }) => useHandleTask('secs', target.value)}
+        required
+      />
+      <button style={{ display: 'none' }}></button>
+    </form>
+  )
 }
+
+export default NewTaskForm
